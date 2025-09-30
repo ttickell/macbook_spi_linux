@@ -80,6 +80,7 @@ sudo mkdir -p "$INSTALL_DIR"
 sudo mkdir -p "$INSTALL_DIR/scripts"
 sudo mkdir -p "$INSTALL_DIR/backup"
 sudo mkdir -p "$INSTALL_DIR/logs"
+sudo mkdir -p /etc/systemd/system-sleep
 
 # PHASE 1: Core System Fixes
 echo ""
@@ -160,6 +161,7 @@ echo "   ✅ Manual fix: /usr/local/bin/macbook-wake-fix"
 
 # Create automatic sleep hook
 echo "🔧 Installing automatic sleep/wake hook..."
+sudo mkdir -p /etc/systemd/system-sleep
 sudo tee /etc/systemd/system-sleep/macbook8-auto-fix > /dev/null << 'EOF'
 #!/bin/bash
 
@@ -178,7 +180,11 @@ esac
 EOF
 
 sudo chmod +x /etc/systemd/system-sleep/macbook8-auto-fix
-echo "   ✅ Automatic fix: systemd sleep hook"
+if [ -f /etc/systemd/system-sleep/macbook8-auto-fix ]; then
+    echo "   ✅ Automatic fix: systemd sleep hook installed"
+else
+    echo "   ❌ Failed to create systemd sleep hook"
+fi
 
 # PHASE 2: Kernel Update Protection
 echo ""

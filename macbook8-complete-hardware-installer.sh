@@ -102,6 +102,7 @@ sudo mkdir -p "$INSTALL_DIR/drivers"
 sudo mkdir -p "$INSTALL_DIR/backup"
 sudo mkdir -p "$INSTALL_DIR/logs"
 sudo mkdir -p "$INSTALL_DIR/src"
+sudo mkdir -p /etc/systemd/system-sleep
 
 # PHASE 1: System Prerequisites
 echo ""
@@ -189,6 +190,7 @@ sudo chmod +x "$INSTALL_DIR/scripts/spi-wake-fix"
 sudo ln -sf "$INSTALL_DIR/scripts/spi-wake-fix" /usr/local/bin/macbook-spi-fix
 
 # Install automatic sleep hook
+sudo mkdir -p /etc/systemd/system-sleep
 sudo tee /etc/systemd/system-sleep/macbook8-spi-auto > /dev/null << 'EOF'
 #!/bin/bash
 case $1 in
@@ -199,8 +201,11 @@ case $1 in
 esac
 EOF
 sudo chmod +x /etc/systemd/system-sleep/macbook8-spi-auto
-
-echo "✅ SPI keyboard/touchpad fixes installed"
+if [ -f /etc/systemd/system-sleep/macbook8-spi-auto ]; then
+    echo "✅ SPI keyboard/touchpad fixes installed"
+else
+    echo "❌ Failed to install SPI sleep hooks"
+fi
 
 # PHASE 3: Audio System
 echo ""
